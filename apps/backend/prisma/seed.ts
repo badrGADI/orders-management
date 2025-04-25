@@ -23,7 +23,7 @@ async function main() {
     prisma.customer.create({
       data: {
         name: "John Doe",
-        email: "john@example.com",
+        email: "johnaa@example.com",
         phone: "+33 123456789",
         address: "123 Main St, Paris, France",
       },
@@ -31,7 +31,7 @@ async function main() {
     prisma.customer.create({
       data: {
         name: "John Doe",
-        email: "john@example.com",
+        email: "john1@example.com",
         phone: "+33 123456789",
         address: "123 Main St, Paris, France",
       },
@@ -39,7 +39,7 @@ async function main() {
     prisma.customer.create({
       data: {
         name: "John Doe",
-        email: "john@example.com",
+        email: "john25@example.com",
         phone: "+33 123456789",
         address: "123 Main St, Paris, France",
       },
@@ -47,7 +47,7 @@ async function main() {
     prisma.customer.create({
       data: {
         name: "John Doe",
-        email: "john@example.com",
+        email: "john55@example.com",
         phone: "+33 123456789",
         address: "123 Main St, Paris, France",
       },
