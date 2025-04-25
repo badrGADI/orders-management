@@ -1,15 +1,12 @@
 const { PrismaClient } = require("@prisma/client");
-
 const prisma = new PrismaClient();
 
 async function main() {
-  // Clean up existing data
   await prisma.orderItem.deleteMany({});
   await prisma.order.deleteMany({});
   await prisma.customer.deleteMany({});
   await prisma.product.deleteMany({});
 
-  // Create customers
   const customers = await Promise.all([
     prisma.customer.create({
       data: {
@@ -19,40 +16,6 @@ async function main() {
         address: "123 Main St, Paris, France",
       },
     }),
-
-    prisma.customer.create({
-      data: {
-        name: "John Doe",
-        email: "johnaa@example.com",
-        phone: "+33 123456789",
-        address: "123 Main St, Paris, France",
-      },
-    }),
-    prisma.customer.create({
-      data: {
-        name: "John Doe",
-        email: "john1@example.com",
-        phone: "+33 123456789",
-        address: "123 Main St, Paris, France",
-      },
-    }),
-    prisma.customer.create({
-      data: {
-        name: "John Doe",
-        email: "john25@example.com",
-        phone: "+33 123456789",
-        address: "123 Main St, Paris, France",
-      },
-    }),
-    prisma.customer.create({
-      data: {
-        name: "John Doe",
-        email: "john55@example.com",
-        phone: "+33 123456789",
-        address: "123 Main St, Paris, France",
-      },
-    }),
-
     prisma.customer.create({
       data: {
         name: "Jane Smith",
@@ -71,7 +34,6 @@ async function main() {
     }),
   ]);
 
-  // Create products
   const products = await Promise.all([
     prisma.product.create({
       data: {
@@ -115,259 +77,46 @@ async function main() {
     }),
   ]);
 
-  // Create orders
-  const orders = await Promise.all([
-    prisma.order.create({
+  const getRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+  const orders = [];
+  for (let i = 1; i <= 115; i++) {
+    const selectedProducts = [getRandom(products), getRandom(products)];
+    const items = selectedProducts.map((product) => ({
+      quantity: Math.ceil(Math.random() * 2),
+      unitPrice: product.price,
+      productId: product.id,
+    }));
+
+    const subtotal = items.reduce(
+      (sum, item) => sum + item.quantity * item.unitPrice,
+      0
+    );
+    const tax = parseFloat((subtotal * 0.2).toFixed(2));
+    const shipping = 10 + Math.random() * 10;
+    const totalAmount = subtotal + tax + shipping;
+
+    const order = await prisma.order.create({
       data: {
-        reference: "ORD-001",
-        status: "delivered",
-        subtotal: 1299.99,
-        tax: 260.0,
-        shipping: 15.0,
-        totalAmount: 1574.99,
-        customerId: customers[0].id,
-        items: {
-          create: [
-            {
-              quantity: 1,
-              unitPrice: 1299.99,
-              productId: products[0].id,
-            },
-          ],
-        },
+        reference: `ORD-${String(i).padStart(3, "0")}`,
+        status: getRandom([
+          "new",
+          "processing",
+          "shipped",
+          "delivered",
+          "cancelled",
+        ]),
+        subtotal,
+        tax,
+        shipping,
+        totalAmount: parseFloat(totalAmount.toFixed(2)),
+        customerId: getRandom(customers).id,
+        items: { create: items },
       },
-    }),
-    prisma.order.create({
-      data: {
-        reference: "ORD-01101",
-        status: "delivered",
-        subtotal: 1299.99,
-        tax: 260.0,
-        shipping: 15.0,
-        totalAmount: 1574.99,
-        customerId: customers[0].id,
-        items: {
-          create: [
-            {
-              quantity: 1,
-              unitPrice: 1299.99,
-              productId: products[0].id,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.order.create({
-      data: {
-        reference: "ORD-011901",
-        status: "delivered",
-        subtotal: 1299.99,
-        tax: 260.0,
-        shipping: 15.0,
-        totalAmount: 1574.99,
-        customerId: customers[0].id,
-        items: {
-          create: [
-            {
-              quantity: 1,
-              unitPrice: 1299.99,
-              productId: products[0].id,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.order.create({
-      data: {
-        reference: "ORD-01801",
-        status: "delivered",
-        subtotal: 1299.99,
-        tax: 260.0,
-        shipping: 15.0,
-        totalAmount: 1574.99,
-        customerId: customers[0].id,
-        items: {
-          create: [
-            {
-              quantity: 1,
-              unitPrice: 1299.99,
-              productId: products[0].id,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.order.create({
-      data: {
-        reference: "ORD-0801",
-        status: "delivered",
-        subtotal: 1299.99,
-        tax: 260.0,
-        shipping: 15.0,
-        totalAmount: 1574.99,
-        customerId: customers[0].id,
-        items: {
-          create: [
-            {
-              quantity: 1,
-              unitPrice: 1299.99,
-              productId: products[0].id,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.order.create({
-      data: {
-        reference: "ORD-01101",
-        status: "delivered",
-        subtotal: 1299.99,
-        tax: 260.0,
-        shipping: 15.0,
-        totalAmount: 1574.99,
-        customerId: customers[0].id,
-        items: {
-          create: [
-            {
-              quantity: 1,
-              unitPrice: 1299.99,
-              productId: products[0].id,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.order.create({
-      data: {
-        reference: "ORD-01201",
-        status: "delivered",
-        subtotal: 1299.99,
-        tax: 260.0,
-        shipping: 15.0,
-        totalAmount: 1574.99,
-        customerId: customers[0].id,
-        items: {
-          create: [
-            {
-              quantity: 1,
-              unitPrice: 1299.99,
-              productId: products[0].id,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.order.create({
-      data: {
-        reference: "ORD-0011",
-        status: "delivered",
-        subtotal: 1299.99,
-        tax: 260.0,
-        shipping: 15.0,
-        totalAmount: 1574.99,
-        customerId: customers[0].id,
-        items: {
-          create: [
-            {
-              quantity: 1,
-              unitPrice: 1299.99,
-              productId: products[0].id,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.order.create({
-      data: {
-        reference: "ORD-002",
-        status: "processing",
-        subtotal: 1149.98,
-        tax: 230.0,
-        shipping: 15.0,
-        totalAmount: 1394.98,
-        customerId: customers[1].id,
-        items: {
-          create: [
-            {
-              quantity: 1,
-              unitPrice: 899.99,
-              productId: products[1].id,
-            },
-            {
-              quantity: 1,
-              unitPrice: 249.99,
-              productId: products[2].id,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.order.create({
-      data: {
-        reference: "ORD-003",
-        status: "new",
-        subtotal: 699.98,
-        tax: 140.0,
-        shipping: 10.0,
-        totalAmount: 849.98,
-        customerId: customers[2].id,
-        items: {
-          create: [
-            {
-              quantity: 1,
-              unitPrice: 499.99,
-              productId: products[3].id,
-            },
-            {
-              quantity: 1,
-              unitPrice: 199.99,
-              productId: products[4].id,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.order.create({
-      data: {
-        reference: "ORD-004",
-        status: "shipped",
-        subtotal: 899.99,
-        tax: 180.0,
-        shipping: 15.0,
-        totalAmount: 1094.99,
-        customerId: customers[0].id,
-        items: {
-          create: [
-            {
-              quantity: 1,
-              unitPrice: 899.99,
-              productId: products[1].id,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.order.create({
-      data: {
-        reference: "ORD-005",
-        status: "cancelled",
-        subtotal: 249.99,
-        tax: 50.0,
-        shipping: 10.0,
-        totalAmount: 309.99,
-        customerId: customers[1].id,
-        items: {
-          create: [
-            {
-              quantity: 1,
-              unitPrice: 249.99,
-              productId: products[2].id,
-            },
-          ],
-        },
-      },
-    }),
-  ]);
+    });
+
+    orders.push(order);
+  }
 
   console.log(`Seeded ${customers.length} customers`);
   console.log(`Seeded ${products.length} products`);
