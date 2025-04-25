@@ -1,6 +1,6 @@
 import type React from "react";
 import "@mantine/core/styles.css";
-import "./globals.css";
+import "../globals.css";
 import { MantineProvider, ColorSchemeScript } from "@mantine/core";
 import { Inter } from "next/font/google";
 import { AppShell } from "@/components/layout/app-shell";
