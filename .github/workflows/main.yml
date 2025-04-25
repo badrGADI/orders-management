@@ -59,7 +59,10 @@ jobs:
         run: pnpm install
 
       - name: Build frontend
-        run: cd apps/frontend && pnpm run build
+        run: cd apps/frontend && NODE_OPTIONS="--max_old_space_size=4096" pnpm run build
+        env:
+          # Disable static generation for the not-found page
+          NEXT_DISABLE_STATICS: 1
 
   build-backend:
     runs-on: ubuntu-latest
@@ -82,6 +85,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+
+      - name: Generate Prisma Client
+        run: cd apps/backend && npx prisma generate
 
       - name: Build backend
         run: cd apps/backend && pnpm run build
