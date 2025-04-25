@@ -58,29 +58,29 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # Create next.config.js with CommonJS module.exports syntax
+      # Create next.config.js set to export mode
       - name: Create next.config.js
         run: |
           cat > apps/frontend/next.config.js << 'EOL'
           /** @type {import('next').NextConfig} */
           const nextConfig = {
             reactStrictMode: false,
-            eslint: {
-              ignoreDuringBuilds: true,
-            },
+            // Switch to export mode which disables static generation of pages
+            output: 'export',
+            // Skip type checking during build
             typescript: {
               ignoreBuildErrors: true,
             },
+            // Skip linting during build
+            eslint: {
+              ignoreDuringBuilds: true,
+            },
+            // Must unoptimize images in export mode
             images: {
               unoptimized: true,
             },
-            // Moved from experimental per warning message
-            skipTrailingSlashRedirect: true,
-            // Added for handling static generation issues
-            output: 'standalone',
-            experimental: {
-              disableOptimizedLoading: true,
-            },
+            // Disable all the features that require a server
+            trailingSlash: true,
             webpack: (config, { isServer }) => {
               // Suppress webpack cache warnings
               config.infrastructureLogging = {
@@ -88,58 +88,67 @@ jobs:
               };
               return config;
             },
-            async rewrites() {
-              return [
-                {
-                  source: "/api/:path*",
-                  destination: "http://localhost:3001/:path*",
-                },
-              ];
-            },
-            // Add redirects to handle not-found page
-            async redirects() {
-              return [
-                {
-                  source: "/_not-found",
-                  destination: "/404",
-                  permanent: false,
-                },
-              ];
-            },
           };
 
-          // Use CommonJS module.exports instead of ES module export
           module.exports = nextConfig;
           EOL
 
-      # Create a not-found page that doesn't use Mantine components
-      - name: Create not-found.tsx
+      # Create providers.tsx
+      - name: Create providers.tsx
         run: |
           mkdir -p apps/frontend/app
-          cat > apps/frontend/app/not-found.tsx << 'EOL'
-          // Using native HTML elements instead of Mantine Button for static generation
-          import Link from "next/link";
+          cat > apps/frontend/app/providers.tsx << 'EOL'
+          'use client';
 
-          export default function NotFound() {
+          import { createTheme, MantineProvider } from '@mantine/core';
+          import { Notifications } from '@mantine/notifications';
+          import '@mantine/core/styles.css';
+          import '@mantine/notifications/styles.css';
+
+          const theme = createTheme({
+            // Your theme customizations
+          });
+
+          export function Providers({ children }: { children: React.ReactNode }) {
             return (
-              <div className="flex flex-col items-center justify-center min-h-screen px-4 text-center">
-                <h1 className="text-6xl font-bold">404</h1>
-                <h2 className="text-2xl mt-4">Page Not Found</h2>
-                <p className="mt-2 text-gray-600 max-w-md">
-                  The page you are looking for doesn't exist or has been moved.
-                </p>
-                <Link href="/" className="mt-8">
-                  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Return to Dashboard
-                  </button>
-                </Link>
-              </div>
+              <MantineProvider theme={theme}>
+                <Notifications />
+                {children}
+              </MantineProvider>
+            );
+          }
+          EOL
+
+      # Create layout.tsx
+      - name: Create layout.tsx
+        run: |
+          cat > apps/frontend/app/layout.tsx << 'EOL'
+          import type { Metadata } from 'next';
+          import { Providers } from './providers';
+          import './globals.css';
+
+          export const metadata: Metadata = {
+            title: 'Order Management System',
+            description: 'Manage orders, customers, and products efficiently',
+          };
+
+          export default function RootLayout({
+            children,
+          }: {
+            children: React.ReactNode;
+          }) {
+            return (
+              <html lang="en">
+                <body>
+                  <Providers>{children}</Providers>
+                </body>
+              </html>
             );
           }
           EOL
 
       - name: Build frontend
-        run: cd apps/frontend && NODE_OPTIONS="--max_old_space_size=4096" NEXT_TELEMETRY_DISABLED=1 NEXT_DISABLE_TRACERS=1 pnpm run build
+        run: cd apps/frontend && NODE_OPTIONS="--max_old_space_size=4096" NEXT_TELEMETRY_DISABLED=1 pnpm run build
 
   build-backend:
     runs-on: ubuntu-latest

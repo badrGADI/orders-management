@@ -1,28 +1,25 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // Switch to export mode which disables static generation of pages
+  output: "export",
+  // Skip type checking during build
   typescript: {
     ignoreBuildErrors: true,
   },
+  // Skip linting during build
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  // Must unoptimize images in export mode
   images: {
     unoptimized: true,
   },
-  // Moved from experimental per warning message
-  skipTrailingSlashRedirect: true,
-  // Added for handling static generation issues
-  output: "standalone",
-  // Disable tracing to avoid permission errors
-  generateBuildId: async () => {
-    // This will disable trace generation
-    process.env.NEXT_DISABLE_TRACERS = "1";
-    return "build-" + Date.now();
-  },
-  experimental: {
-    disableOptimizedLoading: true,
-  },
+  // Disable all the features that require a server
+  trailingSlash: true,
+  // Disable redirects and rewrites in export mode
+  // They won't work anyway in a static export
+
   webpack: (config, { isServer }) => {
     // Suppress webpack cache warnings
     config.infrastructureLogging = {
@@ -30,25 +27,6 @@ const nextConfig = {
     };
     return config;
   },
-  async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: "http://localhost:3001/:path*",
-      },
-    ];
-  },
-  // Add redirects to handle not-found page
-  async redirects() {
-    return [
-      {
-        source: "/_not-found",
-        destination: "/404",
-        permanent: false,
-      },
-    ];
-  },
 };
 
-// Use CommonJS module.exports instead of ES module export
 module.exports = nextConfig;

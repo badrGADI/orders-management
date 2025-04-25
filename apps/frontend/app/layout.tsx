@@ -1,16 +1,10 @@
-import type React from "react";
-import "@mantine/core/styles.css";
+import type { Metadata } from "next";
+import { Providers } from "./providers";
 import "./globals.css";
-import { MantineProvider, ColorSchemeScript } from "@mantine/core";
-import { Inter } from "next/font/google";
-import { AppShell } from "@/components/layout/app-shell";
-import { Notifications } from "@mantine/notifications";
 
-const inter = Inter({ subsets: ["latin"] });
-
-export const metadata = {
+export const metadata: Metadata = {
   title: "Order Management System",
-  description: "A complete order management system",
+  description: "Manage orders, customers, and products efficiently",
 };
 
 export default function RootLayout({
@@ -18,21 +12,10 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Use type assertions to bypass TypeScript errors
-  const MantineProviderComponent = MantineProvider as any;
-  const ColorSchemeScriptComponent = ColorSchemeScript as any;
-  const NotificationsComponent = Notifications as any;
-
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <ColorSchemeScriptComponent />
-      </head>
-      <body className={inter.className}>
-        <MantineProviderComponent>
-          <NotificationsComponent position="top-right" />
-          <AppShell>{children}</AppShell>
-        </MantineProviderComponent>
+    <html lang="en">
+      <body>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
