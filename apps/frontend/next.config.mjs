@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
-  // Switch to export mode which disables static generation of pages
+  // Use standalone mode instead of export
   output: "standalone",
   // Skip type checking during build
   typescript: {
@@ -11,15 +11,16 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Must unoptimize images in export mode
+  // Don't need to unoptimize images in standalone mode
   images: {
-    unoptimized: true,
+    // Set domains if you're loading images from external sources
+    // domains: ['example.com'],
   },
-  // Disable all the features that require a server
-  trailingSlash: true,
-  // Disable redirects and rewrites in export mode
-  // They won't work anyway in a static export
-
+  // Disable static optimization to avoid MantineProvider errors
+  experimental: {
+    // This makes Next.js not try to render pages at build time
+    disableOptimizedLoading: true,
+  },
   webpack: (config, { isServer }) => {
     // Suppress webpack cache warnings
     config.infrastructureLogging = {
@@ -27,6 +28,14 @@ const nextConfig = {
     };
     return config;
   },
+  // Keep your API rewrites
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "http://localhost:3001/:path*",
+      },
+    ];
+  },
 };
-
 export default nextConfig;
