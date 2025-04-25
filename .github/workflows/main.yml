@@ -9,7 +9,7 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    continue-on-error: true # This allows the workflow to continue even if linting fails
+    continue-on-error: true
 
     steps:
       - uses: actions/checkout@v3
@@ -22,24 +22,23 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
-          cache: "pnpm"
+          node-version: "18" # Cache removed
 
       - name: Install dependencies
         run: pnpm install
 
       - name: Lint frontend
         run: cd apps/frontend && pnpm run lint
-        continue-on-error: true # Continue even if frontend linting fails
+        continue-on-error: true
 
       - name: Lint backend
         run: cd apps/backend && pnpm run lint
-        continue-on-error: true # Continue even if backend linting fails
+        continue-on-error: true
 
   build-frontend:
     runs-on: ubuntu-latest
     needs: lint
-    if: always() # This ensures this job runs even if lint job fails
+    if: always()
 
     steps:
       - uses: actions/checkout@v3
@@ -52,13 +51,11 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
-          cache: "pnpm"
+          node-version: "18" # Cache removed
 
       - name: Install dependencies
         run: pnpm install
 
-      # Create next.config.js to disable static generation
       - name: Create next.config.js
         run: |
           cat > apps/frontend/next.config.js << 'EOL'
@@ -74,20 +71,15 @@ jobs:
             images: {
               unoptimized: true,
             },
-            // Completely disable static optimization and pre-rendering
             experimental: {
-              // Disable static generation completely during build
               disableStaticGenerationForPages: true,
               disableOptimizedLoading: true,
             },
-            // Force all builds to be simple production builds without static optimization
             productionBrowserSourceMaps: false,
-            // Disable all optimization during build
             optimizeFonts: false,
             swcMinify: false,
             compress: false,
             webpack: (config, { isServer }) => {
-              // Suppress webpack cache warnings
               config.infrastructureLogging = {
                 level: "error",
               };
@@ -106,7 +98,6 @@ jobs:
           module.exports = nextConfig;
           EOL
 
-      # Create a simple JSX version of the new order page without Mantine components
       - name: Create simplified order page
         run: |
           mkdir -p apps/frontend/app/orders/new
@@ -144,7 +135,7 @@ jobs:
   build-backend:
     runs-on: ubuntu-latest
     needs: lint
-    if: always() # This ensures this job runs even if lint job fails
+    if: always()
 
     steps:
       - uses: actions/checkout@v3
@@ -157,8 +148,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
-          cache: "pnpm"
+          node-version: "18" # Cache removed
 
       - name: Install dependencies
         run: pnpm install
@@ -185,8 +175,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
-          cache: "pnpm"
+          node-version: "18" # Cache removed
 
       - name: Install Vercel CLI
         run: npm install -g vercel
