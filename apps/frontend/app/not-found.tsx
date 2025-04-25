@@ -1,4 +1,4 @@
-// Using native HTML elements instead of Mantine Button for static generation
+import { Button } from "@mantine/core";
 import Link from "next/link";
 
 export default function NotFound() {
@@ -10,9 +10,7 @@ export default function NotFound() {
         The page you are looking for doesn't exist or has been moved.
       </p>
       <Link href="/" className="mt-8">
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Return to Dashboard
-        </button>
+        <Button>Return to Dashboard</Button>
       </Link>
     </div>
   );
