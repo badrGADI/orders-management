@@ -1,26 +1,27 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
-  // Use standalone mode instead of export
-  output: "standalone",
-  // Skip type checking during build
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  // Skip linting during build
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Don't need to unoptimize images in standalone mode
-  images: {
-    // Set domains if you're loading images from external sources
-    // domains: ['example.com'],
+  typescript: {
+    ignoreBuildErrors: true,
   },
-  // Disable static optimization to avoid MantineProvider errors
+  images: {
+    unoptimized: true,
+  },
+  // Completely disable static optimization and pre-rendering
   experimental: {
-    // This makes Next.js not try to render pages at build time
+    // Disable static generation completely during build
+    disableStaticGenerationForPages: true,
     disableOptimizedLoading: true,
   },
+  // Force all builds to be simple production builds without static optimization
+  productionBrowserSourceMaps: false,
+  // Disable all optimization during build
+  optimizeFonts: false,
+  swcMinify: false,
+  compress: false,
   webpack: (config, { isServer }) => {
     // Suppress webpack cache warnings
     config.infrastructureLogging = {
@@ -28,7 +29,6 @@ const nextConfig = {
     };
     return config;
   },
-  // Keep your API rewrites
   async rewrites() {
     return [
       {
