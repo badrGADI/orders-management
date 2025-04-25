@@ -160,7 +160,7 @@ jobs:
 
       # Build with NODE_ENV=production to avoid development mode warnings
       - name: Build frontend
-        run: cd apps/frontend && NODE_OPTIONS="--max_old_space_size=4096" NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 pnpm run build
+        run: cd apps/frontend && npm run build
 
   build-backend:
     runs-on: ubuntu-latest
