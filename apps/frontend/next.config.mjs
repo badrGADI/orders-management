@@ -10,11 +10,17 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // Moved from experimental per warning message
+  skipTrailingSlashRedirect: true,
   // Added for handling static generation issues
   output: "standalone",
+  // Disable tracing to avoid permission errors
+  generateBuildId: async () => {
+    // This will disable trace generation
+    process.env.NEXT_DISABLE_TRACERS = "1";
+    return "build-" + Date.now();
+  },
   experimental: {
-    // Skip building the not-found page during static generation
-    skipTrailingSlashRedirect: true,
     disableOptimizedLoading: true,
   },
   webpack: (config, { isServer }) => {
@@ -44,4 +50,5 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+// Use CommonJS module.exports instead of ES module export
+module.exports = nextConfig;
