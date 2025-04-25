@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: false,
   // Switch to export mode which disables static generation of pages
-  output: "export",
+  output: "standalone",
   // Skip type checking during build
   typescript: {
     ignoreBuildErrors: true,
@@ -29,4 +29,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;
