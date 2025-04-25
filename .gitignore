@@ -1,0 +1,85 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+apps/backend/node_modules
+apps/frontend/node_modules
+node_modules/
+.pnp/
+.pnp.js
+
+# Build files
+dist/
+build/
+out/
+.next/
+.nuxt/
+.output/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.suo
+.ntvs
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+
+# Temporary files
+*.log
+*.tmp
+*.temp
+.cache/
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Database
+*.sqlite
+*.db
+
+# Generated types
+*.d.ts
+*.d.ts.map
+
+# Turborepo
+.turbo
+
+# Vercel
+.vercel
+
+# Storybook
+storybook-static/
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+
+# Next.js
+.next/
+out/
+
+# NestJS
+dist/
