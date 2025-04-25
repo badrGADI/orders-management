@@ -172,29 +172,32 @@ export function OrderForm({ initialData }: OrderFormProps) {
   const handleSubmit = async (values: typeof form.values) => {
     setLoading(true);
     try {
-      const orderData = {
-        id: initialData?.id,
-        status: values.status,
-        customer: {
-          id: values.customerId,
-          name: values.customerName,
-          email: values.customerEmail,
-          phone: values.customerPhone,
-          address: values.customerAddress,
-        },
-        items: values.items.map((item) => ({
-          productId: item.productId,
-          quantity: item.quantity,
-          unitPrice: item.unitPrice,
-        })),
-        shipping: values.shipping,
-        tax: values.tax,
-        subtotal: calculateSubtotal(),
-        totalAmount: calculateTotal(),
-      };
+      const subtotal = calculateSubtotal();
+      const totalAmount = calculateTotal();
 
       if (initialData) {
-        await updateOrder(initialData.id, orderData);
+        // For updates, we need to format the data according to UpdateOrderDto
+        const updateData = {
+          status: values.status,
+          customer: {
+            id: values.customerId,
+            name: values.customerName,
+            email: values.customerEmail,
+            phone: values.customerPhone,
+            address: values.customerAddress,
+          },
+          items: values.items.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+          })),
+          subtotal,
+          tax: values.tax,
+          shipping: values.shipping,
+          totalAmount,
+        };
+
+        await updateOrder(initialData.id, updateData);
         notifications.show({
           title: "Success",
           message: "Order updated successfully",
@@ -202,7 +205,28 @@ export function OrderForm({ initialData }: OrderFormProps) {
         });
         router.push(`/orders/${initialData.id}`);
       } else {
-        const newOrder = await createOrder(orderData);
+        // For new orders
+        const newOrderData = {
+          status: values.status,
+          customer: {
+            id: values.customerId,
+            name: values.customerName,
+            email: values.customerEmail,
+            phone: values.customerPhone,
+            address: values.customerAddress,
+          },
+          items: values.items.map((item) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+          })),
+          subtotal,
+          tax: values.tax,
+          shipping: values.shipping,
+          totalAmount,
+        };
+
+        const newOrder = await createOrder(newOrderData);
         notifications.show({
           title: "Success",
           message: "Order created successfully",
@@ -364,7 +388,7 @@ export function OrderForm({ initialData }: OrderFormProps) {
                           onChange={(value) =>
                             form.setFieldValue(
                               `items.${index}.unitPrice`,
-                              value || 1
+                              value || 0
                             )
                           }
                           error={form.errors[`items.${index}.unitPrice`]}
@@ -433,7 +457,7 @@ export function OrderForm({ initialData }: OrderFormProps) {
 
                     // Use isNaN to ensure a valid number
                     form.setFieldValue(
-                      "shipping",
+                      "tax",
                       isNaN(numericValue) ? 0 : numericValue
                     );
                   }}
